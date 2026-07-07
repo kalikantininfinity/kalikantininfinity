@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalikant Jha — Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --bg:        #0c0e10;
+      --surface:   #13171a;
+      --border:    #1f2428;
+      --muted:     #3a4048;
+      --text-dim:  #6b7685;
+      --text:      #c8d0d8;
+      --text-hi:   #e8ecf0;
+      --amber:     #f59e0b;
+      --amber-dim: #78450a;
+      --green:     #22c55e;
+      --mono:      'IBM Plex Mono', monospace;
+      --sans:      'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── HEADER / HERO ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 64px 0 56px;
+    }
+
+    .status-bar {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .status-bar .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    .status-bar .sep { color: var(--muted); }
+
+    h1 {
+      font-family: var(--mono);
+      font-size: clamp(32px, 6vw, 54px);
+      font-weight: 600;
+      color: var(--text-hi);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .tagline {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--amber);
+      letter-spacing: 0.04em;
+      margin-bottom: 28px;
+    }
+
+    .bio {
+      font-size: 16px;
+      color: var(--text);
+      max-width: 640px;
+      line-height: 1.8;
+    }
+
+    .bio strong {
+      color: var(--text-hi);
+      font-weight: 500;
+    }
+
+    /* ── NAV LINKS ── */
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 36px;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      padding: 7px 16px;
+      border-radius: 3px;
+      transition: all 0.18s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--amber);
+      border-color: var(--amber-dim);
+      background: rgba(245,158,11,0.05);
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── FLAGSHIP PROJECT — AMDVS ── */
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--amber), transparent);
+    }
+
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .project-title {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-hi);
+    }
+
+    .project-title span {
+      color: var(--amber);
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 2px;
+      background: rgba(245,158,11,0.12);
+      color: var(--amber);
+      border: 1px solid var(--amber-dim);
+      white-space: nowrap;
+    }
+
+    .project-desc {
+      color: var(--text);
+      margin-bottom: 28px;
+      max-width: 600px;
+    }
+
+    /* ── SPEC TABLE ── */
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .spec-item {
+      background: var(--bg);
+      padding: 14px 18px;
+    }
+
+    .spec-key {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .spec-val {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-hi);
+      font-weight: 500;
+    }
+
+    .spec-val.highlight { color: var(--amber); }
+
+    /* ── MILESTONE TIMELINE ── */
+    .milestones {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .milestone {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 10px 0;
+    }
+
+    .milestone-marker {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      min-width: 36px;
+      padding-top: 2px;
+    }
+
+    .milestone-marker.done { color: var(--green); }
+    .milestone-marker.active { color: var(--amber); }
+
+    .milestone-text {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .milestone-text.done { color: var(--text-dim); text-decoration: line-through; text-decoration-color: var(--muted); }
+    .milestone-text.active { color: var(--text-hi); }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .skill-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px 24px;
+    }
+
+    .skill-group-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--amber);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .skill-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .skill-list li {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .skill-list li::before {
+      content: '›';
+      color: var(--muted);
+    }
+
+    /* ── PHILOSOPHY ── */
+    .philosophy-block {
+      border-left: 2px solid var(--amber);
+      padding: 4px 0 4px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .philosophy-item {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .philosophy-item strong {
+      color: var(--text-hi);
+      font-weight: 500;
+    }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .contact-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px 20px;
+      text-decoration: none;
+      transition: all 0.18s ease;
+    }
+
+    .contact-item:hover {
+      border-color: var(--amber-dim);
+      background: rgba(245,158,11,0.04);
+    }
+
+    .contact-type {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .contact-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-hi);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 36px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer p {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    footer p span { color: var(--amber); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      header { padding: 40px 0 36px; }
+      section { padding: 40px 0; }
+      .project-card { padding: 22px 18px; }
+      .spec-grid { grid-template-columns: 1fr 1fr; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="container">
+
+      <div class="status-bar">
+        <span class="dot"></span>
+        <span>AMDVS — Phase 1 Build</span>
+        <span class="sep">|</span>
+        <span>Arkansas State University</span>
+        <span class="sep">|</span>
+        <span>Self-funded</span>
+      </div>
+
+      <h1>Kalikant Jha</h1>
+      <p class="tagline">// CS Student · Robotics Builder · Embedded AI</p>
+
+      <p class="bio">
+        Most engineers build software that lives in the cloud.
+        I build software that has to <strong>survive contact with the ground.</strong>
+        My real classroom is a self-funded robot on my desk —
+        I learn by making the thing, breaking the thing, and rebuilding it better.
+        I care about robotics, AI/ML, and aerospace:
+        the places where code meets physics and
+        <strong>"it works on my machine" isn't good enough.</strong>
+      </p>
+
+      <nav class="nav-links">
+        <a href="#project">AMDVS Project</a>
+        <a href="#skills">Stack</a>
+        <a href="#philosophy">Philosophy</a>
+        <a href="#contact">Contact</a>
+        <a href="https://kalikantjha.com" target="_blank">kalikantjha.com ↗</a>
+        <a href="https://github.com/kalikantininfinity" target="_blank">GitHub ↗</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- ── FLAGSHIP PROJECT ── -->
+  <section id="project">
+    <div class="container">
+
+      <p class="section-label">Flagship Project</p>
+
+      <div class="project-card">
+
+        <div class="project-header">
+          <div class="project-title">
+            <span>AMDVS</span> — Autonomous Multi-Domain Vehicle System
+          </div>
+          <span class="badge">● Active Build</span>
+        </div>
+
+        <p class="project-desc">
+          An autonomous ground rover built from a bare board — no lab, no grant, no team.
+          Phase 1 achieves real-time object detection on-device.
+          Phase 2 adds a cooperating drone that scouts ahead and docks back on the rover:
+          the Perseverance + Ingenuity idea, built in a bedroom.
+          The goal isn't a demo that looks smart — it's a system that
+          stays smart when a sensor lies, the sun blinds the camera, or the path disappears.
+        </p>
+
+        <div class="spec-grid">
+          <div class="spec-item">
+            <div class="spec-key">Compute</div>
+            <div class="spec-val">Jetson Orin Nano Super</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">Detection</div>
+            <div class="spec-val highlight">30 FPS on-device</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">Model</div>
+            <div class="spec-val">YOLOv8 → TensorRT FP16</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">Camera</div>
+            <div class="spec-val">Arducam IMX219 CSI</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">OS / Stack</div>
+            <div class="spec-val">Ubuntu 22.04 · JetPack 6.2</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-key">Nav Stack</div>
+            <div class="spec-val">ROS 2 / Nav2</div>
+          </div>
+        </div>
+
+        <p class="section-label" style="margin-bottom: 16px;">Build Milestones</p>
+
+        <div class="milestones">
+          <div class="milestone">
+            <span class="milestone-marker done">✓ GP1</span>
+            <span class="milestone-text done">Real-time object detection — YOLOv8n @ 30 FPS on CSI camera</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-marker active">→ GP2</span>
+            <span class="milestone-text active">Lane following</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-marker">  GP3</span>
+            <span class="milestone-text">GNSS + IMU waypoint navigation (dual-EKF)</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-marker">  GP4</span>
+            <span class="milestone-text">360° LiDAR mapping</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-marker">  GP5</span>
+            <span class="milestone-text">Concurrency — asyncio + ROS 2</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-marker">  GP6</span>
+            <span class="milestone-text">Hardware e-stop reflex (&lt;50ms watchdog)</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-marker">  Ph2</span>
+            <span class="milestone-text">Cooperating drone — overhead recon + AprilTag docking</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── SKILLS ── -->
+  <section id="skills">
+    <div class="container">
+
+      <p class="section-label">Stack</p>
+
+      <div class="skills-grid">
+
+        <div class="skill-group">
+          <p class="skill-group-title">Robotics & Embedded</p>
+          <ul class="skill-list">
+            <li>ROS 2 / Nav2</li>
+            <li>NVIDIA Jetson / JetPack</li>
+            <li>TensorRT · CUDA</li>
+            <li>Hardware watchdog (ATmega)</li>
+            <li>Sensor fusion / EKF</li>
+            <li>LiDAR · GNSS · IMU</li>
+          </ul>
+        </div>
+
+        <div class="skill-group">
+          <p class="skill-group-title">AI / ML & Vision</p>
+          <ul class="skill-list">
+            <li>YOLOv8 · TensorRT FP16</li>
+            <li>OpenCV · jetson-utils</li>
+            <li>PyTorch (Jetson build)</li>
+            <li>AprilTag / ArUco fiducials</li>
+            <li>Real-time inference pipelines</li>
+          </ul>
+        </div>
+
+        <div class="skill-group">
+          <p class="skill-group-title">Software</p>
+          <ul class="skill-list">
+            <li>Python · asyncio</li>
+            <li>C (DSA fundamentals)</li>
+            <li>Linux (Ubuntu 22.04)</li>
+            <li>Git · GitHub</li>
+            <li>Flask · WebSocket</li>
+            <li>4G · LoRa · Iridium comms</li>
+          </ul>
+        </div>
+
+        <div class="skill-group">
+          <p class="skill-group-title">CS Coursework</p>
+          <ul class="skill-list">
+            <li>Data Structures (hash tables, RBT)</li>
+            <li>Algorithms · Dijkstra · DP</li>
+            <li>Computer Architecture · RISC-V</li>
+            <li>Physics labs (mechanics)</li>
+            <li>MLOps · RAG · Agentic AI</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── PHILOSOPHY ── -->
+  <section id="philosophy">
+    <div class="container">
+
+      <p class="section-label">How I Build</p>
+
+      <div class="philosophy-block">
+
+        <p class="philosophy-item">
+          <strong>Builder before anything else.</strong>
+          I learn by making the thing, breaking the thing, and rebuilding it better.
+          Every frame of 30 FPS was earned by something breaking first.
+        </p>
+
+        <p class="philosophy-item">
+          <strong>Safety is not deferred.</strong>
+          The unglamorous layer — safety reflexes, sensor fusion, the code that keeps
+          an autonomous system alive when reality stops cooperating — that's the interesting work.
+          A hardware e-stop under 50ms is a from-the-start requirement, not a future feature.
+        </p>
+
+        <p class="philosophy-item">
+          <strong>Each project is a brick.</strong>
+          Reusable, documented, compounding into a stack I own end to end.
+          No black boxes I can't explain or rebuild.
+        </p>
+
+        <p class="philosophy-item">
+          <strong>Self-funded means every decision counts.</strong>
+          No lab, no grant, no team. That constraint is a feature —
+          it forces prioritization, documentation, and real engineering over demos.
+        </p>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section id="contact">
+    <div class="container">
+
+      <p class="section-label">Contact</p>
+
+      <p style="color: var(--text); margin-bottom: 24px; max-width: 540px;">
+        Looking for teams building autonomous systems, perception, or embedded AI.
+        If you've ever debugged why a robot froze at 2am, we'll get along.
+      </p>
+
+      <div class="contact-grid">
+        <a class="contact-item" href="https://kalikantjha.com" target="_blank">
+          <span class="contact-type">Website</span>
+          <span class="contact-value">kalikantjha.com</span>
+        </a>
+        <a class="contact-item" href="https://github.com/kalikantininfinity" target="_blank">
+          <span class="contact-type">GitHub</span>
+          <span class="contact-value">kalikantininfinity</span>
+        </a>
+        <a class="contact-item" href="#">
+          <span class="contact-type">University</span>
+          <span class="contact-value">Arkansas State University</span>
+        </a>
+        <a class="contact-item" href="#">
+          <span class="contact-type">Focus</span>
+          <span class="contact-value">AI / MLOps · Robotics Eng.</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; width:100%;">
+      <p>Kalikant Jha — <span>AMDVS Project</span></p>
+      <p style="color: var(--muted);">Built ground-up. No shortcuts.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
